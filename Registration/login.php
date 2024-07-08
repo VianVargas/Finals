@@ -1,12 +1,37 @@
-<?php 
-    include "../Database/db_login.php";
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once 'authorize.php';
+
+$is_invalid = false;
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (login($_POST["login"], $_POST["password"])) {
+        if ($_SESSION["user_role"] == "admin") {
+            header("Location: ../Main/admin_dashboard.php");
+        } else {
+            header("Location: ../Main/user_dashboard.php");
+        }
+        exit;
+    }
+    $is_invalid = true;
+}
 ?>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-<h1>Login</h1>     
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+<body>
+    <h1>Login</h1>     
     <form method="POST">
-        <label for="email">Username or Email</label>
-        <input type="text" name="login" id="login"
-                value="<?= htmlspecialchars($_POST["login"] ?? "")?>">
+        <label for="login">Username or Email</label>
+        <input type="text" name="login" id="login" value="<?= htmlspecialchars($_POST["login"] ?? "") ?>">
 
         <label for="password">Password</label>
         <input type="password" name="password" id="password">
@@ -17,5 +42,7 @@
 
         <button>Log In</button>
 
-        <p><a href="signup.php">Don't have an Account?</a></p>
+        <p>Don't have an Account? <a href="signup.php">Register here</a></p>
     </form>
+</body>
+</html>

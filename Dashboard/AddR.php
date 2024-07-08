@@ -1,41 +1,138 @@
-<header>
-    <h1>Admin:</h1>
-    <h1>Blood Recipients Details</h1>
-        
-</header>
-<form method="post">
-    <input type="text" name="Full_Name" id="Full_Name" placeholder="Eg. Fraizer Jethro G. Vargas">
-    <br>
-    <input type="text" name="Age" id="Age" placeholder="eg. 20">
-    <br>
-    <input type="date" name="Birth_Date" id="Birth_Date">
-    <br>
-    <select class="form-control" name="Blood_type" id="Blood_type">
-    <option value="" disabled selected>Select Blood Type</option>
-                <option value='A-'>A-</option>
-                <option value='A+'>A+</option>
-                <option value='B-'>B-</option>
-                <option value='B+'>B+</option>
-                <option value='O-'>O-</option>
-                <option value='O+'>O+</option>
-                <option value='AB-'>AB-</option>
-                <option value='AB+'>AB+</option>
-        </select>
-    <br>
-    <select class="form-control" name="Gender" id="Gender">
-    <option value="" disabled selected>Select Gender</option>
-                <option value="Male">Male</option>
-                 <option value="Female">Female</option>
-                <option value="Others">Others</option>
-        </select>
-    <br>
-    <br>
-    <input type="submit" name="Submit2-box" value="Donate">
-</form>
-
 <?php
-    include "../Database/db_recipients.php"
-    ?>
+    require_once '../Database/db_functions.php';
+?>
 
-<br>
-<a href = '../Design/Doctype.php'> click here to go back</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Blood Recipients Details</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;700&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .form-footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Admin: Blood Recipients Details</h1>
+        </header>
+        <form method="post" action="">
+            <div class="form-group">
+                <label for="Full_Name">Full Name</label>
+                <input type="text" name="Full_Name" id="Full_Name" class="form-control" placeholder="Eg. Fraizer Jethro G. Vargas" required>
+            </div>
+            <div class="form-group">
+                <label for="Age">Age</label>
+                <input type="number" name="Age" id="Age" class="form-control" placeholder="eg. 20" required>
+            </div>
+            <div class="form-group">
+                <label for="Birth_Date">Birth Date</label>
+                <input type="date" name="Birth_Date" id="Birth_Date" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="Blood_type">Blood Type</label>
+                <select class="form-control" name="Blood_type" id="Blood_type" required>
+                    <option value="" disabled selected>Select Blood Type</option>
+                    <option value='A-'>A-</option>
+                    <option value='A+'>A+</option>
+                    <option value='B-'>B-</option>
+                    <option value='B+'>B+</option>
+                    <option value='O-'>O-</option>
+                    <option value='O+'>O+</option>
+                    <option value='AB-'>AB-</option>
+                    <option value='AB+'>AB+</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Gender">Gender</label>
+                <select class="form-control" name="Gender" id="Gender" required>
+                    <option value="" disabled selected>Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" name="Submit2-box" id="Submit2-box" value="Add Recipients" class="btn">
+            </div>
+        </form>
+        <div class="form-footer">
+            <a href="../Main/admin_dashboard.php">Click here to go back</a>
+        </div>
+    </div>
+    <?php
+        submit_recipient();
+    ?>
+</body>
+</html>
+
+

@@ -1,10 +1,3 @@
-<?php 
-    require_once "../Database/db_functions.php";
-
-    if (isset($_POST["Submit-box"])) {
-        submit_donor_user();
-    }
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,6 +45,8 @@
             border-radius: 5px;
             font-size: 16px;
             transition: border-color 0.3s ease;
+            background-color: #f0f0f0; /* Light gray background */
+            color: #666; /* Dark gray text color */
         }
         .form-control:focus {
             outline: none;
@@ -81,6 +76,10 @@
         .form-footer a:hover {
             text-decoration: underline;
         }
+        .readonly {
+            background-color: #f0f0f0; /* Light gray background */
+            color: #666; /* Dark gray text color */
+        }
     </style>
 </head>
 <body>
@@ -88,23 +87,26 @@
         <header>
             <h1>Blood Donor Details</h1>
         </header>
-
-        <form method="post" action="">
+        <form>
             <div class="form-group">
                 <label for="Full_Name">Full Name</label>
-                <input type="text" name="Full_Name" id="Full_Name" class="form-control" placeholder="Eg. Fraizer Jethro G. Vargas" required>
+                <input type="text" name="Full_Name" id="Full_Name" class="form-control readonly" placeholder="Eg. Fraizer Jethro G. Vargas" readonly>
             </div>
             <div class="form-group">
                 <label for="Age">Age</label>
-                <input type="number" name="Age" id="Age" class="form-control" placeholder="eg. 20" required>
+                <input type="number" name="Age" id="Age" class="form-control readonly" placeholder="eg. 20" readonly>
             </div>
             <div class="form-group">
                 <label for="Birth_Date">Birth Date</label>
-                <input type="date" name="Birth_Date" id="Birth_Date" class="form-control" required>
+                <input type="date" name="Birth_Date" id="Birth_Date" class="form-control readonly" readonly>
+            </div>
+            <div class="form-group">
+                <label for="Collection_Date">Collection Date</label>
+                <input type="date" name="Collection_Date" id="Collection_Date" class="form-control readonly" readonly>
             </div>
             <div class="form-group">
                 <label for="Blood_type">Blood Type</label>
-                <select class="form-control" name="Blood_type" id="Blood_type" required>
+                <select class="form-control readonly" name="Blood_type" id="Blood_type" disabled>
                     <option value="" disabled selected>Select Blood Type</option>
                     <option value='A-'>A-</option>
                     <option value='A+'>A+</option>
@@ -118,21 +120,19 @@
             </div>
             <div class="form-group">
                 <label for="Gender">Gender</label>
-                <select class="form-control" name="Gender" id="Gender" required>
+                <select class="form-control readonly" name="Gender" id="Gender" disabled>
                     <option value="" disabled selected>Select Gender</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Others">Others</option>
                 </select>
             </div>
-            <div class="form-group">
-                <input type="submit" name="Submit-box" value="Donate" class="btn">
-            </div>
         </form>
         <div class="form-footer">
+            <p>You have already submitted your donor details. You can view them in your profile.</p>
+            <br>
             <a href="../Main/user_dashboard.php">Click here to go back</a>
         </div>
     </div>
 </body>
 </html>
-<?php
