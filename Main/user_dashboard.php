@@ -90,9 +90,9 @@ $user_name = htmlspecialchars($_SESSION["user_name"]);
         </div>
         <ul class="dashboard-links">
             <li><a href="../Dashboard/Add.php">Donate Blood</a></li>
-            <li><a href="../Dashboard/View_donor_details.php">View My Donor Details</a></li>
+            <li><a href="../Dashboard/View_Donation.php">View My Donation Details</a></li>
             <li><a href="../Dashboard/Search.php">Search Recipients</a></li>
-            <li><a href="../Dashboard/Announce_View.php">Announcement View</a></li>
+            <li><a href="../Dashboard/View_Announcement.php">Announcement View</a></li>
         </ul>
         <div class="logout-link">
             <a href="../Registration/logout.php" id="logout-link">Logout</a>

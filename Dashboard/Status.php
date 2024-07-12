@@ -17,12 +17,13 @@ function canAcceptBlood($recipientBloodType, $donorBloodType) {
 }
 
 function autoAssignDonors($conn) {
-
+    // Get all available donors
     $donorSql = "SELECT * FROM blood_donors WHERE Donors_ID NOT IN (SELECT donor_id FROM donations)";
     $donors = mysqli_query($conn, $donorSql);
     $availableDonors = mysqli_fetch_all($donors, MYSQLI_ASSOC);
 
-    $recipientSql = "SELECT * FROM blood_recipients ORDER BY priority DESC, Recipients_ID ASC";
+    // Get all recipients who haven't been assigned a donor yet
+    $recipientSql = "SELECT * FROM blood_recipients WHERE status = 'Pending' ORDER BY priority DESC, Recipients_ID ASC";
     $recipients = mysqli_query($conn, $recipientSql);
 
     while ($recipient = mysqli_fetch_assoc($recipients)) {
@@ -39,6 +40,7 @@ function autoAssignDonors($conn) {
                     $updateStmt->bind_param("i", $recipient['Recipients_ID']);
                     $updateStmt->execute();
 
+                    // Remove the assigned donor from the available donors list
                     unset($availableDonors[$key]);
                     break;
                 }
@@ -47,6 +49,33 @@ function autoAssignDonors($conn) {
     }
 }
 
+// Handle priority updates
+if (isset($_POST['recipient_id'])) {
+    $recipient_id = $_POST['recipient_id'];
+    
+    if (isset($_POST['increase_priority'])) {
+        $sql = "UPDATE blood_recipients SET priority = priority + 1 WHERE Recipients_ID = ?";
+    } elseif (isset($_POST['decrease_priority'])) {
+        $sql = "UPDATE blood_recipients SET priority = GREATEST(priority - 1, 0) WHERE Recipients_ID = ?";
+    }
+
+    if (isset($sql)) {
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $recipient_id);
+        $stmt->execute();
+
+        // Reset all assignments
+        mysqli_query($conn, "DELETE FROM donations");
+        mysqli_query($conn, "UPDATE blood_recipients SET status = 'Pending'");
+
+        // Run auto-assign process
+        autoAssignDonors($conn);
+
+        $_SESSION['priority_update_message'] = "Priority updated and donations reassigned.";
+    }
+}
+
+// Run auto-assign process on page load
 autoAssignDonors($conn);
 
 ?>
@@ -132,7 +161,7 @@ autoAssignDonors($conn);
         }
 
         echo "<table>";
-        echo "<th>ID</th><th>Full Name</th><th>Age</th><th>Birth Date</th><th>Blood Type</th><th>Gender</th><th>Donor</th><th>Status</th><th>Priority</th></tr>";
+        echo "<tr><th>ID</th><th>Full Name</th><th>Age</th><th>Birth Date</th><th>Blood Type</th><th>Gender</th><th>Donor</th><th>Status</th><th>Priority</th></tr>";
 
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
@@ -145,7 +174,7 @@ autoAssignDonors($conn);
             echo "<td>" . ($row['donor_id'] ? htmlspecialchars($row['donor_name']) : 'None') . "</td>";
             echo "<td>" . $row['status'] . "</td>";
             echo "<td>
-                <form method='post' action='Update_priority.php' style='display:inline;'>
+                <form method='post' action='Status.php' style='display:inline;'>
                     <input type='hidden' name='recipient_id' value='" . $row['Recipients_ID'] . "'>
                     <input type='submit' name='increase_priority' value='+'>
                     <input type='submit' name='decrease_priority' value='-'>

@@ -5,6 +5,7 @@
         submit_donor_user();
     }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,16 +96,12 @@
                 <input type="text" name="Full_Name" id="Full_Name" class="form-control" placeholder="Eg. Fraizer Jethro G. Vargas" required>
             </div>
             <div class="form-group">
-                <label for="Age">Age</label>
-                <input type="number" name="Age" id="Age" class="form-control" placeholder="eg. 20" required>
-            </div>
-            <div class="form-group">
                 <label for="Birth_Date">Birth Date</label>
                 <input type="date" name="Birth_Date" id="Birth_Date" class="form-control" required>
             </div>
             <div class="form-group">
                 <label for="Blood_type">Blood Type</label>
-                <select class="form-control" name="Blood_type" id="Blood_type" required>
+                <select class="form-control" name="Blood_Type" id="Blood_Type" required>
                     <option value="" disabled selected>Select Blood Type</option>
                     <option value='A-'>A-</option>
                     <option value='A+'>A+</option>
@@ -135,4 +132,3 @@
     </div>
 </body>
 </html>
-<?php

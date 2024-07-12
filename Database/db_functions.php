@@ -21,30 +21,47 @@ function submit_donor_user() {
     $user_email = $_SESSION['user_email'];
     $conn = db_connect();
 
-    $check_sql = "SELECT * FROM blood_donors WHERE Email = ?";
-    $check_stmt = $conn->prepare($check_sql);
-    $check_stmt->bind_param("s", $user_email);
-    $check_stmt->execute();
-    $result = $check_stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        header("Location: ../Dashboard/NotAvail.php");
-        exit();
+    if (!$conn) {
+        die("Database connection failed.");
     }
 
     if (isset($_POST["Submit-box"])) {
         $FullName = strip_tags($_POST['Full_Name']);
-        $Age = filter_input(INPUT_POST, 'Age', FILTER_VALIDATE_INT);
         $BirthDate = strip_tags($_POST['Birth_Date']);
-        $BloodType = isset($_POST['Blood_type']) ? strip_tags(trim($_POST['Blood_type'])) : '';
+        $BloodType = isset($_POST['Blood_Type']) ? strip_tags(trim($_POST['Blood_Type'])) : '';
         $Gender = isset($_POST['Gender']) ? strip_tags(trim($_POST['Gender'])) : '';
-        $CollectionDate = date('Y-m-d H:i:s'); 
+        $CollectionDate = date('Y-m-d H:i:s');
 
-        if ($Age === false || $Age === null) {
-            die("Please enter a valid integer for Age.");
+        // Calculate age based on birth date
+        $birthDate = new DateTime($BirthDate);
+        $today = new DateTime();
+        $age = $today->diff($birthDate)->y;
+
+        // Check if age is between 18 and 65
+        if ($age < 18 || $age > 65) {
+            echo "Sorry, donors must be between 18 and 65 years old.";
+            return;
         }
 
-        if (!empty($FullName) && !empty($Age) && !empty($BirthDate) && !empty($BloodType) && !empty($Gender)) {
+        // Check if this is the user's first donation
+        $check_sql = "SELECT Full_Name FROM blood_donors WHERE Email = ? ORDER BY Collection_Date DESC LIMIT 1";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt->bind_param("s", $user_email);
+        $check_stmt->execute();
+        $result = $check_stmt->get_result();
+
+        $is_first_donation = true;
+        if ($result->num_rows > 0) {
+            $is_first_donation = false;
+            $row = $result->fetch_assoc();
+            if ($row['Full_Name'] !== $FullName) {
+                echo "Warning: The name does not match your previous donation record. Use the name from your first donation.";
+                return;
+            }
+        }
+
+        // Proceed with insertion
+        if (!empty($FullName) && !empty($BirthDate) && !empty($BloodType) && !empty($Gender)) {
             $sql = "INSERT INTO `blood_donors` (Full_Name, Age, Birth_Date, Blood_type, Gender, Email, Collection_Date) 
                     VALUES (?, ?, ?, ?, ?, ?, ?)";
             
@@ -53,7 +70,7 @@ function submit_donor_user() {
                 die("Error in preparing the statement: " . $conn->error);
             }
 
-            $stmt->bind_param("sisssss", $FullName, $Age, $BirthDate, $BloodType, $Gender, $user_email, $CollectionDate);
+            $stmt->bind_param("sisssss", $FullName, $age, $BirthDate, $BloodType, $Gender, $user_email, $CollectionDate);
 
             if ($stmt->execute()) {
                 echo "Donor details submitted successfully!";
@@ -146,10 +163,38 @@ function search_recipient() {
     }
 }
 
-// You can call these functions as needed in your code
-// For example:
-// submit_donor_admin();
-// submit_donor_user();
-// submit_recipient();
-// search_recipient();
+function fetchAnnouncements() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["announcement-box"])) {
+        $conn = db_connect();
+        $Title = strip_tags($_POST['Title']);
+        $Announce = strip_tags($_POST['Announcement']);
+        $Organizer = strip_tags($_POST['Organizer']);
+        $DateEvent = $_POST['Date_Event'];
+
+        if (!empty($Title) && !empty($Announce) && !empty($Organizer) && !empty($DateEvent)) {
+            $sql = "INSERT INTO `announcements` (Title, Announcement, Organizer, Date_Event) 
+                    VALUES (?, ?, ?, ?)";
+            
+            $stmt = $conn->prepare($sql);
+            if ($stmt === false) {
+                $message = "Error in preparing the statement: " . $conn->error;
+            } else {
+                $stmt->bind_param("ssss", $Title, $Announce, $Organizer, $DateEvent);
+
+                if ($stmt->execute()) {
+                    $message = "Announcement added successfully.";
+                    // Redirect to prevent resubmission on refresh
+                    header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+                    exit();
+                } else {
+                    $message = "Error: " . $stmt->error;
+                }
+
+                $stmt->close();
+            }
+        } else {
+            $message = "All fields are required.";
+        }
+    }
+}
 ?>

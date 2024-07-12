@@ -89,6 +89,7 @@ $user_name = htmlspecialchars($_SESSION["user_name"]);
             <li><a href="../Dashboard/addR.php">Add Recipients Details</a></li>
             <li><a href="../Dashboard/View.php">View Blood Collection</a></li>
             <li><a href="../Dashboard/Status.php">Donor Status</a></li>
+            <li><a href="../Dashboard/Announcement.php">Announcement View</a></li>
         </ul>
         <div class="logout-link">
             <a href="../Registration/logout.php" id="logout-link">Logout</a>
