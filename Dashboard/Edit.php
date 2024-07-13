@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 
 include "../Database/db_connect.php";
 
-$FullName = $Age = $BirthDate = $BloodType = $Gender = $CollectDate = '';
+$FullName = $BirthDate = $BloodType = $Gender = $CollectDate = '';
 $id = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $FullName = isset($row['Full_Name']) ? $row['Full_Name'] : '';
-        $Age = isset($row['Age']) ? $row['Age'] : '';
+    
         $BirthDate = isset($row['Birth_Date']) ? $row['Birth_Date'] : '';
         $BloodType = isset($row['Blood_Type']) ? $row['Blood_Type'] : '';
         $Gender = isset($row['Gender']) ? $row['Gender'] : '';
@@ -32,37 +32,42 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
     $stmt->close();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Update-box"])) {
+$error_message = '';
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Update-box"])) {
     $id = $_POST['Donors_ID'];
     $FullName = $_POST['Full_Name'];
-    $Age = $_POST['Age'];
     $BirthDate = $_POST['Birth_Date'];
     $BloodType = isset($_POST['Blood_Type']) ? $_POST['Blood_Type'] : '';
     $Gender = isset($_POST['Gender']) ? $_POST['Gender'] : '';
     $CollectDate = $_POST['Collection_Date'];
 
-    $FullName = strip_tags($FullName);
-    $Age = strip_tags($Age);
-    $BirthDate = strip_tags($BirthDate);
-    $BloodType = strip_tags($BloodType);
-    $Gender = strip_tags($Gender);
-    $CollectDate = strip_tags($CollectDate);
+    // Calculate age based on the new birth date
+    $birthDate = new DateTime($BirthDate);
+    $today = new DateTime();
+    $age = $today->diff($birthDate)->y;
 
-    $sql = "UPDATE blood_donors SET Full_Name=?, Age=?, Birth_Date=?, Blood_Type=?, Gender=?, Collection_Date=? WHERE Donors_ID=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssi", $FullName, $Age, $BirthDate, $BloodType, $Gender, $CollectDate, $id);
-
-    if ($stmt->execute()) {
-        echo "Donor details updated successfully.";
-
-        header("Location: View.php?id=" . $id);
-        exit();
+    // Check if age is between 18 and 65
+    if ($age < 18 || $age > 65) {
+        $error_message = "Sorry, donors must be between 18 and 65 years old.";
     } else {
-        echo "Error updating donor details: " . $stmt->error;
-    }
+        $sql = "UPDATE blood_donors SET Full_Name=?, Birth_Date=?, Blood_Type=?, Gender=?, Collection_Date=?, Age=? WHERE Donors_ID=?";
+        $stmt = $conn->prepare($sql);
+        if ($stmt === false) {
+            $error_message = "Error in preparing the statement: " . $conn->error;
+        } else {
+            $stmt->bind_param("sssssii", $FullName, $BirthDate, $BloodType, $Gender, $CollectDate, $age, $id);
 
-    $stmt->close();
+            if ($stmt->execute()) {
+                header("Location: View.php?id=" . $id);
+                exit();
+            } else {
+                $error_message = "Error updating donor details: " . $stmt->error;
+            }
+
+            $stmt->close();
+        }
+    }
 }
 
 $conn->close();
@@ -156,10 +161,7 @@ $conn->close();
                 <label for="Full_Name">Full name:</label>
                 <input type="text" name="Full_Name" id="Full_Name" class="form-control" value="<?php echo htmlspecialchars($FullName); ?>">
             </div>
-            <div class="form-group">
-                <label for="Age">Age:</label>
-                <input type="text" name="Age" id="Age" class="form-control" value="<?php echo htmlspecialchars($Age); ?>">
-            </div>
+            
             <div class="form-group">
                 <label for="Birth_Date">Birth Date:</label>
                 <input type="date" name="Birth_Date" id="Birth_Date" class="form-control" value="<?php echo htmlspecialchars($BirthDate); ?>">
