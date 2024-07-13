@@ -66,6 +66,9 @@
         th[colspan='7'] {
             text-align: center;
         }
+        th[colspan='6'] {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -107,6 +110,40 @@
         echo "<td>". strip_tags($row['Gender']). "</td>";
         echo "<td>". strip_tags($row['Collection_Date']). "</td>";
         echo "<td><a href='Delete.php?id=" . $row['Donors_ID'] . "' onclick='return confirm(\"Are you sure you want to delete this record?\")'>Delete</a> <a href='Edit.php?id=" . $row['Donors_ID'] . "' onclick='return confirm(\"Are you sure you want to Edit\")'>Edit</a></td>";
+        echo "</tr>";
+    }
+
+    echo "</table>";
+
+    // Blood Recipients Table
+    $sql_recipients = "SELECT Recipients_ID, Full_Name, Age, Birth_Date, Blood_type, Gender FROM blood_recipients";
+    $result_recipients = mysqli_query($conn, $sql_recipients);
+
+    if (!$result_recipients) {
+        die('Error: ' . mysqli_error($conn));
+    }
+
+    echo "<table>";
+    echo "<tr>";
+    echo "<th colspan='6'>Blood Recipients Collection</th>";
+    echo "</tr>";
+    echo "<tr>";
+    echo "<th>Full Name</th>";
+    echo "<th>Age</th>"; 
+    echo "<th>Birth Date</th>";
+    echo "<th>Blood Type</th>";
+    echo "<th>Gender</th>"; 
+    echo "<th>Action</th>"; 
+    echo "</tr>";
+
+    while ($row = mysqli_fetch_array($result_recipients)) {
+        echo "<tr>";
+        echo "<td>". strip_tags($row['Full_Name']). "</td>";
+        echo "<td>". strip_tags($row['Age']). "</td>";
+        echo "<td>". strip_tags($row['Birth_Date']). "</td>";
+        echo "<td>". strip_tags($row['Blood_type']). "</td>";
+        echo "<td>". strip_tags($row['Gender']). "</td>";
+        echo "<td><a href='DeleteR.php?id=" . $row['Recipients_ID'] . "' onclick='return confirm(\"Are you sure you want to delete this record?\")'>Delete</a> <a href='EditR.php?id=" . $row['Recipients_ID'] . "' onclick='return confirm(\"Are you sure you want to Edit\")'>Edit</a></td>";
         echo "</tr>";
     }
 
