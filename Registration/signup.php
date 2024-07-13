@@ -47,20 +47,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="initialStyle.css">
 </head>
 <body>
+    <div class="container">
     <h1>Sign Up</h1>
-
-    <?php if (!empty($errors)): ?>
-        <div style="color: red;">
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <li><?= htmlspecialchars($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
 
     <?php if ($signup_success): ?>
         <p>Sign Up Successful!</p>
@@ -84,9 +75,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" name="password_confirmation" id="password_confirmation">
             </div>
             
+            <?php if (!empty($errors)): ?>
+                <div style="color: red;">
+                    <ul>
+                        <?php foreach ($errors as $error): ?>
+                            <li><?= htmlspecialchars($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
             <button>Sign Up</button>
             <p>Already have an account? <a href="../Registration/login.php">Click here to login</a></p>
         </form>
     <?php endif; ?>
+    </div>
 </body>
 </html>

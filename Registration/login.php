@@ -25,9 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="initialStyle.css">
 </head>
 <body>
+    <div class="container">
     <h1>Login</h1>     
     <form method="POST">
         <label for="login">Username or Email</label>
@@ -44,5 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <p>Don't have an Account? <a href="signup.php">Register here</a></p>
     </form>
+    </div>
 </body>
 </html>
