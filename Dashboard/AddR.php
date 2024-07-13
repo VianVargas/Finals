@@ -1,5 +1,9 @@
 <?php
     require_once '../Database/db_functions.php';
+    
+    if (isset($_POST["Submit2-box"])) {
+        submit_recipient();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -78,6 +82,8 @@
         .form-footer a:hover {
             text-decoration: underline;
         }
+        .error { color: red; }
+        .success { color: green; }
     </style>
 </head>
 <body>
@@ -89,10 +95,6 @@
             <div class="form-group">
                 <label for="Full_Name">Full Name</label>
                 <input type="text" name="Full_Name" id="Full_Name" class="form-control" placeholder="Eg. Fraizer Jethro G. Vargas" required>
-            </div>
-            <div class="form-group">
-                <label for="Age">Age</label>
-                <input type="number" name="Age" id="Age" class="form-control" placeholder="eg. 20" required>
             </div>
             <div class="form-group">
                 <label for="Birth_Date">Birth Date</label>
@@ -121,6 +123,18 @@
                     <option value="Others">Others</option>
                 </select>
             </div>
+
+            <?php
+            if (isset($_SESSION['message'])) {
+                echo "<div class='success'>" . htmlspecialchars($_SESSION['message']) . "</div>";
+                unset($_SESSION['message']);
+            } elseif (isset($_SESSION['error'])) {
+                echo "<div class='error'>" . htmlspecialchars($_SESSION['error']) . "</div>";
+                unset($_SESSION['error']);
+            }
+            ?>
+
+            <br>
             <div class="form-group">
                 <input type="submit" name="Submit2-box" id="Submit2-box" value="Add Recipients" class="btn">
             </div>
@@ -129,9 +143,7 @@
             <a href="../Main/admin_dashboard.php">Click here to go back</a>
         </div>
     </div>
-    <?php
-        submit_recipient();
-    ?>
+
 </body>
 </html>
 
