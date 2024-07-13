@@ -82,6 +82,8 @@
         .form-footer a:hover {
             text-decoration: underline;
         }
+        .error { color: red; }
+        .success { color: green; }
     </style>
 </head>
 <body>
@@ -122,6 +124,18 @@
                     <option value="Others">Others</option>
                 </select>
             </div>
+
+            <?php
+            if (isset($_SESSION['message'])) {
+                echo "<div class='success'>" . htmlspecialchars($_SESSION['message']) . "</div>";
+                unset($_SESSION['message']);
+            } elseif (isset($_SESSION['error'])) {
+                echo "<div class='error'>" . htmlspecialchars($_SESSION['error']) . "</div>";
+                unset($_SESSION['error']);
+            }
+            ?>
+            
+            <br>
             <div class="form-group">
                 <input type="submit" name="Submit-box" value="Donate" class="btn">
             </div>
