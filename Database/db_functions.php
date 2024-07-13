@@ -15,14 +15,16 @@ function db_connect() {
 
 function submit_donor_user() {
     if (!isset($_SESSION['user_email'])) {
-        die("You must be logged in to submit donor details.");
+        $_SESSION['error'] = "You must be logged in to submit donor details.";
+        return;
     }
 
     $user_email = $_SESSION['user_email'];
     $conn = db_connect();
 
     if (!$conn) {
-        die("Database connection failed.");
+        $_SESSION['error'] = "Database connection failed.";
+        return;
     }
 
     if (isset($_POST["Submit-box"])) {
@@ -39,7 +41,7 @@ function submit_donor_user() {
 
         // Check if age is between 18 and 65
         if ($age < 18 || $age > 65) {
-            echo "Sorry, donors must be between 18 and 65 years old.";
+            $_SESSION['error'] = "Sorry, donors must be between 18 and 65 years old.";
             return;
         }
 
@@ -55,7 +57,7 @@ function submit_donor_user() {
             $is_first_donation = false;
             $row = $result->fetch_assoc();
             if ($row['Full_Name'] !== $FullName) {
-                echo "Warning: The name does not match your previous donation record. Use the name from your first donation.";
+                $_SESSION['error'] = "Warning: The name does not match your previous donation record. Use the name from your first donation.";
                 return;
             }
         }
@@ -67,60 +69,72 @@ function submit_donor_user() {
             
             $stmt = $conn->prepare($sql);
             if ($stmt === false) {
-                die("Error in preparing the statement: " . $conn->error);
-            }
-
-            $stmt->bind_param("sisssss", $FullName, $age, $BirthDate, $BloodType, $Gender, $user_email, $CollectionDate);
-
-            if ($stmt->execute()) {
-                echo "Donor details submitted successfully!";
+                $_SESSION['error'] = "Error in preparing the statement: " . $conn->error;
             } else {
-                echo "Error: " . $stmt->error;
-            }
+                $stmt->bind_param("sisssss", $FullName, $age, $BirthDate, $BloodType, $Gender, $user_email, $CollectionDate);
 
-            $stmt->close();
+                if ($stmt->execute()) {
+                    $_SESSION ['message'] = "Donor added successfully.";
+                    // Redirect to prevent resubmission on refresh
+                    header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+                    exit();
+                }  else {
+                    $_SESSION['error'] = "Error: " . $stmt->error;
+                }
+                $stmt->close();
+            }
         } else {
-            echo "All fields are required.";
+            $_SESSION['error'] = "All fields are required.";
         }
     }
 
     $conn->close();
 }
-
 function submit_recipient() {
-    if (isset($_POST["Submit2-box"])) {
-        $conn = db_connect();
+    $conn = db_connect();
 
+    if (!$conn) {
+        $_SESSION['error'] = "Database connection failed.";
+        return;
+    }
+
+    if (isset($_POST["Submit2-box"])) {
         $FullName = strip_tags($_POST['Full_Name']);
-        $Age = strip_tags($_POST['Age']);
         $BirthDate = strip_tags($_POST['Birth_Date']);
         $BloodType = isset($_POST['Blood_type']) ? strip_tags(trim($_POST['Blood_type'])) : '';
         $Gender = isset($_POST['Gender']) ? strip_tags(trim($_POST['Gender'])) : '';
 
-        if (!empty($FullName) && !empty($Age) && !empty($BirthDate) && !empty($BloodType) && !empty($Gender)) {
+        if (!empty($FullName) && !empty($BirthDate) && !empty($BloodType) && !empty($Gender)) {
+            // Calculate age
+            $birthDate = new DateTime($BirthDate);
+            $today = new DateTime();
+            $age = $today->diff($birthDate)->y;
+
             $sql = "INSERT INTO `blood_recipients` (Full_Name, Age, Birth_Date, Blood_type, Gender) 
                     VALUES (?, ?, ?, ?, ?)";
             
             $stmt = $conn->prepare($sql);
             if ($stmt === false) {
-                die("Error in preparing the statement: " . $conn->error);
-            }
-
-            $stmt->bind_param("sssss", $FullName, $Age, $BirthDate, $BloodType, $Gender);
-
-            if ($stmt->execute()) {
-                echo "Recipient details submitted successfully!";
+                $_SESSION['error'] = "Error in preparing the statement: " . $conn->error;
             } else {
-                echo "Error: " . $stmt->error;
+                $stmt->bind_param("sisss", $FullName, $age, $BirthDate, $BloodType, $Gender);
+            
+                if ($stmt->execute()) {
+                    $_SESSION ['message'] = "Recipient added successfully.";
+                    // Redirect to prevent resubmission on refresh
+                    header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+                    exit();
+                }  else {
+                    $_SESSION['error'] = "Error: " . $stmt->error;
+                }
+                $stmt->close();
             }
-
-            $stmt->close();
         } else {
-            echo "All fields are required.";
+            $_SESSION['error'] = "All fields are required.";
         }
-
-        $conn->close();
     }
+
+    $conn->close();
 }
 
 function search_recipient() {
