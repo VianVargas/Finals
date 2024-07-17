@@ -7,10 +7,10 @@
 
     $statusMessage = '';
     if (isset($_SESSION['success'])) {
-        $statusMessage = "<p class='success'>" . $_SESSION['success'] . "</p>";
+        $statusMessage = "<div class='alert alert-success'>" . $_SESSION['success'] . "</div>";
         unset($_SESSION['success']);
     } elseif (isset($_SESSION['error'])) {
-        $statusMessage = "<p class='error'>" . $_SESSION['error'] . "</p>";
+        $statusMessage = "<div class='alert alert-danger'>" . $_SESSION['error'] . "</div>";
         unset($_SESSION['error']);
     }
 ?>
@@ -20,128 +20,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Announcement</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
         body {
+            font-family: 'Montserrat', sans-serif;
             background-color: #f4f4f4;
             color: #333;
-            padding: 20px;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             flex-direction: column;
+            min-height: 100vh;
+        }
+        .content-wrapper {
+            flex: 1 0 auto;
+        }
+        .footer {
+            flex-shrink: 0;
         }
         .container {
-            max-width: 600px;
-            width: 100%;
+            max-width: 90%;
             background-color: #fff;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
         }
-        .form-group {
-            margin-bottom: 20px;
+        .form-control:focus, .form-select:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
-        .form-group label {
+        .btn-primary {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover, .btn-secondary:focus {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        h1 {
+            color: #dc3545;
             font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-        .form-inline {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .form-inline .form-group {
-            flex: 1;
-            min-width: 200px;
-        }
-        .btn {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .form-footer {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .form-footer a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .form-footer a:hover {
-            text-decoration: underline;
         }
         textarea.form-control {
             height: 300px;
-            resize: none;
+            resize: vertical;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Admin Announcement</h1>
-        </header>
-        <form method="post">
-            <div class="form-inline">
-                <div class="form-group">
-                    <label for="Title">Title</label>
-                    <input type="text" name="Title" id="Title" class="form-control" placeholder="Title" required>
+    <div class="content-wrapper">
+        <?php include ("../Design/navbar_admin.php"); ?>
+        
+        <div class="container">
+            <h1 class="mb-4">Admin Announcement</h1>
+
+            <form method="post">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="Title" class="form-label">Title</label>
+                        <input type="text" name="Title" id="Title" class="form-control" placeholder="Title" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="Organizer" class="form-label">Organizer</label>
+                        <input type="text" name="Organizer" id="Organizer" class="form-control" placeholder="Organizer" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="Date_Event" class="form-label">Date Event</label>
+                        <input type="date" name="Date_Event" id="Date_Event" class="form-control" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="Organizer">Organizer</label>
-                    <input type="text" name="Organizer" id="Organizer" class="form-control" placeholder="Organizer" required>
+                <div class="mb-3">
+                    <label for="Announcement" class="form-label">Announcement</label>
+                    <textarea name="Announcement" id="Announcement" class="form-control" placeholder="Announcement" required></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="Date_Event">Date Event</label>
-                    <input type="date" name="Date_Event" id="Date_Event" class="form-control" placeholder="Date Event" required>
+
+                <?php echo $statusMessage; ?>
+
+                <div class="mb-3">
+                    <button type="submit" name="announcement-box" class="btn btn-primary">Submit</button>
                 </div>
+            </form>
+            <div class="text-center mt-3">
+                <a href="../Main/admin_dashboard.php" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
             </div>
-            <div class="form-group">
-                <label for="Announcement">Announcement</label>
-                <textarea name="Announcement" id="Announcement" class="form-control" placeholder="Announcement" required oninput="adjustTextarea(this)"></textarea>
-            </div>
-            <div class="form-group">
-                <input type="submit" name="announcement-box" class="btn" value="Submit">
-            </div>
-        </form>
-        <div class="form-footer">
-            <a href='../Main/admin_dashboard.php'>Click here to go back</a>
         </div>
     </div>
-    <script>
-        function adjustTextarea(el) {
-            el.style.height = '300px';
-            el.style.height = (el.scrollHeight) + 'px';
-        }
-    </script>
+
+    <?php include ("../Design/footer.php"); ?>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
 </body>
 </html>

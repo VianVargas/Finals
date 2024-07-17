@@ -1,76 +1,72 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
 
-include "../Database/db_connect.php";
+    include "../Database/db_connect.php";
 
-$FullName = $BirthDate = $BloodType = $Gender = $CollectDate = '';
-$id = '';
+    $FullName = $BirthDate = $BloodType = $Gender = $CollectDate = '';
+    $id = '';
+    $error_message = '';
+    $success_message = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
-    $id = $_GET['id'];
+    if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
+        $id = $_GET['id'];
 
-    $sql = "SELECT * FROM blood_donors WHERE Donors_ID = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+        $sql = "SELECT * FROM blood_donors WHERE Donors_ID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $FullName = isset($row['Full_Name']) ? $row['Full_Name'] : '';
-    
-        $BirthDate = isset($row['Birth_Date']) ? $row['Birth_Date'] : '';
-        $BloodType = isset($row['Blood_Type']) ? $row['Blood_Type'] : '';
-        $Gender = isset($row['Gender']) ? $row['Gender'] : '';
-        $CollectDate = isset($row['Collection_Date']) ? $row['Collection_Date'] : '';
-    } else {
-        echo "No donor found with ID: " . $id;
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $FullName = isset($row['Full_Name']) ? $row['Full_Name'] : '';
+            $BirthDate = isset($row['Birth_Date']) ? $row['Birth_Date'] : '';
+            $BloodType = isset($row['Blood_Type']) ? $row['Blood_Type'] : '';
+            $Gender = isset($row['Gender']) ? $row['Gender'] : '';
+            $CollectDate = isset($row['Collection_Date']) ? $row['Collection_Date'] : '';
+        } else {
+            echo "No donor found with ID: " . $id;
+        }
+
+        $stmt->close();
     }
 
-    $stmt->close();
-}
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Update-box"])) {
+        $id = $_POST['Donors_ID'];
+        $FullName = $_POST['Full_Name'];
+        $BirthDate = $_POST['Birth_Date'];
+        $BloodType = isset($_POST['Blood_Type']) ? $_POST['Blood_Type'] : '';
+        $Gender = isset($_POST['Gender']) ? $_POST['Gender'] : '';
+        $CollectDate = $_POST['Collection_Date'];
 
-$error_message = '';
+        $birthDate = new DateTime($BirthDate);
+        $today = new DateTime();
+        $age = $today->diff($birthDate)->y;
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Update-box"])) {
-    $id = $_POST['Donors_ID'];
-    $FullName = $_POST['Full_Name'];
-    $BirthDate = $_POST['Birth_Date'];
-    $BloodType = isset($_POST['Blood_Type']) ? $_POST['Blood_Type'] : '';
-    $Gender = isset($_POST['Gender']) ? $_POST['Gender'] : '';
-    $CollectDate = $_POST['Collection_Date'];
-
-    // Calculate age based on the new birth date
-    $birthDate = new DateTime($BirthDate);
-    $today = new DateTime();
-    $age = $today->diff($birthDate)->y;
-
-    // Check if age is between 18 and 65
-    if ($age < 18 || $age > 65) {
-        $error_message = "Sorry, donors must be between 18 and 65 years old.";
-    } else {
-        $sql = "UPDATE blood_donors SET Full_Name=?, Birth_Date=?, Blood_Type=?, Gender=?, Collection_Date=?, Age=? WHERE Donors_ID=?";
-        $stmt = $conn->prepare($sql);
-        if ($stmt === false) {
-            $error_message = "Error in preparing the statement: " . $conn->error;
+        if ($age < 18 || $age > 65) {
+            $error_message = "Sorry, donors must be between 18 and 65 years old.";
         } else {
-            $stmt->bind_param("sssssii", $FullName, $BirthDate, $BloodType, $Gender, $CollectDate, $age, $id);
-
-            if ($stmt->execute()) {
-                header("Location: View.php?id=" . $id);
-                exit();
+            $sql = "UPDATE blood_donors SET Full_Name=?, Birth_Date=?, Blood_Type=?, Gender=?, Collection_Date=?, Age=? WHERE Donors_ID=?";
+            $stmt = $conn->prepare($sql);
+            if ($stmt === false) {
+                $error_message = "Error in preparing the statement: " . $conn->error;
             } else {
-                $error_message = "Error updating donor details: " . $stmt->error;
-            }
+                $stmt->bind_param("sssssii", $FullName, $BirthDate, $BloodType, $Gender, $CollectDate, $age, $id);
 
-            $stmt->close();
+                if ($stmt->execute()) {
+                    $success_message = "Donor details updated successfully.";
+                } else {
+                    $error_message = "Error updating donor details: " . $stmt->error;
+                }
+
+                $stmt->close();
+            }
         }
     }
-}
 
-$conn->close();
+    $conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -93,7 +89,7 @@ $conn->close();
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             flex-direction: column;
         }
         .container {
@@ -122,10 +118,10 @@ $conn->close();
         }
         .form-control:focus {
             outline: none;
-            border-color: #007bff;
+            border-color: #dc3545;
         }
         .btn {
-            background-color: #007bff;
+            background-color: #dc3545;
             color: #fff;
             border: none;
             padding: 12px 20px;
@@ -135,18 +131,32 @@ $conn->close();
             transition: background-color 0.3s ease;
         }
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #c82333;
         }
         .form-footer {
             margin-top: 20px;
             text-align: center;
         }
         .form-footer a {
-            color: #007bff;
+            color: #dc3545;
             text-decoration: none;
         }
         .form-footer a:hover {
             text-decoration: underline;
+        }
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -157,7 +167,7 @@ $conn->close();
             <h1>Blood Donor Details</h1>
         </header>
         <form method="post">
-            <div class="form-group">
+        <div class="form-group">
                 <label for="Full_Name">Full name:</label>
                 <input type="text" name="Full_Name" id="Full_Name" class="form-control" value="<?php echo htmlspecialchars($FullName); ?>">
             </div>
@@ -197,11 +207,24 @@ $conn->close();
             <div class="form-group">
                 <input type="submit" name="Update-box" value="Edit" class="btn">
             </div>
-        </form>
-        <div class="form-footer">
-            <a href='../Dashboard/View.php'>Back to Dashboard</a>
-        </div>
-    </div>
-</body>
+            <?php if (!empty($success_message)): ?>
+            <div class="success-message">
+                <?php echo $success_message; ?>
+            </div>
 
+            <?php endif; ?>
+            <?php if (!empty($error_message)): ?>
+                <div class="error-message">
+                    <?php echo $error_message; ?>
+                </div>
+            <?php endif; ?>
+
+        </form>
+
+            <div class="form-footer">
+                <a href='../Main/admin_dashboard.php'>Back to Dashboard</a>
+            </div>
+    </div>
+    
+</body>
 </html>
