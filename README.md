@@ -1,5 +1,11 @@
 # Blood Donation System
 
+![Language](https://img.shields.io/badge/Language-PHP-777BB4?style=for-the-badge)
+![Database](https://img.shields.io/badge/Database-MySQL-4479A1?style=for-the-badge)
+![Server](https://img.shields.io/badge/Server-Localhost%20(XAMPP)-F37623?style=for-the-badge)
+![Architecture](https://img.shields.io/badge/Architecture-Modular-4CAF50?style=for-the-badge)
+![UI](https://img.shields.io/badge/UI-HTML%2FCSS-1572B6?style=for-the-badge)
+
 ---
 
 # Overview
