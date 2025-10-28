@@ -19,19 +19,19 @@ This allows users to easily register, donate, and find compatible blood recipien
 # Preview
 
 <p align="center">
-  <img src="images/login" alt="Blood Donation System Screenshot 1" width="40%">
+  <img src="Images/login.png" alt="Blood Donation System Screenshot 1" width="40%">
   &nbsp;&nbsp;&nbsp;
-  <img src="images/main" alt="Blood Donation System Screenshot 2" width="40%">
+  <img src="Images/main.png" alt="Blood Donation System Screenshot 2" width="40%">
 </p>
 
 <p align="center">
-  <img src="images/donor_details" alt="Blood Donation System Screenshot 3" width="40%">
+  <img src="Images/donor_details.png" alt="Blood Donation System Screenshot 3" width="40%">
   &nbsp;&nbsp;&nbsp;
-  <img src="images/donation_details" alt="Blood Donation System Screenshot 4" width="40%">
+  <img src="Images/donation_details.png" alt="Blood Donation System Screenshot 4" width="40%">
 </p>
 
 <p align="center">
-  <img src="images/search" alt="Blood Donation System Screenshot 5" width="40%">
+  <img src="Images/search.png" alt="Blood Donation System Screenshot 5" width="40%">
   &nbsp;&nbsp;&nbsp;
-  <img src="images/admin" alt="Blood Donation System Screenshot 6" width="40%">
+  <img src="Images/admin.png" alt="Blood Donation System Screenshot 6" width="40%">
 </p>
